@@ -138,9 +138,10 @@ def build_mining_candidates(panel: dict, positions: dict) -> dict[str, pd.DataFr
     cand["amihud_20d"] = _snapshot(lambda i: _zscore_cs(_amihud(i, 20)), positions)
     cand["log_volume_20d"] = _snapshot(
         lambda i: _zscore_cs(np.log(vol_panel.iloc[i - 20:i].mean())), positions)
-    # planted noise (should be rejected)
-    cand["noise_a"] = _snapshot(lambda i: _zscore_cs(panel["noise_a"].iloc[i]), positions)
-    cand["noise_b"] = _snapshot(lambda i: _zscore_cs(panel["noise_b"].iloc[i]), positions)
+    # planted noise (only present in the synthetic panel - should be rejected)
+    if "noise_a" in panel and "noise_b" in panel:
+        cand["noise_a"] = _snapshot(lambda i: _zscore_cs(panel["noise_a"].iloc[i]), positions)
+        cand["noise_b"] = _snapshot(lambda i: _zscore_cs(panel["noise_b"].iloc[i]), positions)
     return cand
 
 

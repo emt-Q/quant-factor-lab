@@ -37,16 +37,29 @@ def _fmt(x, nd: int = 3) -> str:
     return "nan" if x is None or (isinstance(x, float) and x != x) else f"{x:.{nd}f}"
 
 
-def run():
+def run(panel: dict | None = None, out_prefix: str = ""):
+    """Run the full pipeline.
+
+    panel      - data panel dict (synthetic by default; pass the output of
+                 `data_adapter.get_real_panel` to run on real market data).
+    out_prefix - prefix for output files (e.g. "real_" to keep synthetic and
+                 real runs separate).
+    """
     os.makedirs(OUT_DIR, exist_ok=True)
+    is_real = panel is not None and panel.get("source", "").startswith("yahoo")
     print("=" * 78)
     print("  EMT QUANT FACTOR LAB - Multi-Factor Alpha Mining & Backtest")
-    print(f"  universe={C.N_STOCKS} stocks | {C.N_DAYS} days | "
-          f"rebalance={C.REBAL_PERIOD}d | cost={C.COST_BPS}bps | seed={C.SEED}")
+    if is_real:
+        print(f"  universe={len(panel['tickers'])} tickers (real, {panel['source']}) | "
+              f"rebalance={C.REBAL_PERIOD}d | cost={C.COST_BPS}bps")
+    else:
+        print(f"  universe={C.N_STOCKS} stocks | {C.N_DAYS} days | "
+              f"rebalance={C.REBAL_PERIOD}d | cost={C.COST_BPS}bps | seed={C.SEED}")
     print("=" * 78)
 
     # ---- 1. Data ----
-    panel = generate_panel()
+    if panel is None:
+        panel = generate_panel()
     prices = panel["prices"]
     grid = rebalance_grid(prices)
     positions = grid_positions(prices, grid)
@@ -128,13 +141,13 @@ def run():
     print(qs.mean().round(4).to_string())
 
     # ---- Save outputs ----
-    res_curated.to_csv(os.path.join(OUT_DIR, "factor_test_results.csv"))
-    res_mined.to_csv(os.path.join(OUT_DIR, "mining_results.csv"))
-    summary.to_csv(os.path.join(OUT_DIR, "backtest_summary.csv"), index=False)
-    ls_ret.rename("long_short").to_csv(os.path.join(OUT_DIR, "portfolio_returns.csv"))
-    _plot_factors(res_curated, sig_curated)
-    _plot_quantiles(qs, best)
-    _plot_equity(ls_ret, lo_ret, _window(bench))
+    res_curated.to_csv(os.path.join(OUT_DIR, f"{out_prefix}factor_test_results.csv"))
+    res_mined.to_csv(os.path.join(OUT_DIR, f"{out_prefix}mining_results.csv"))
+    summary.to_csv(os.path.join(OUT_DIR, f"{out_prefix}backtest_summary.csv"), index=False)
+    ls_ret.rename("long_short").to_csv(os.path.join(OUT_DIR, f"{out_prefix}portfolio_returns.csv"))
+    _plot_factors(res_curated, sig_curated, out_prefix)
+    _plot_quantiles(qs, best, out_prefix)
+    _plot_equity(ls_ret, lo_ret, _window(bench), out_prefix)
     print(f"\nSaved outputs -> {OUT_DIR}/  (CSV + PNG)")
 
 
@@ -142,7 +155,7 @@ def run():
 # Charts
 # --------------------------------------------------------------------------
 
-def _plot_factors(res: pd.DataFrame, sig: pd.Series):
+def _plot_factors(res: pd.DataFrame, sig: pd.Series, prefix: str = ""):
     names = res.index.tolist()
     ics = res["mean_ic"].values
     ts = res["t_stat"].values
@@ -158,12 +171,12 @@ def _plot_factors(res: pd.DataFrame, sig: pd.Series):
     ax.set_ylabel("Mean IC")
     plt.xticks(rotation=30, ha="right")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUT_DIR, "factor_ic.png"), dpi=150)
-    fig.savefig(os.path.join(OUT_DIR, "factor_ic.svg"))
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}factor_ic.png"), dpi=150)
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}factor_ic.svg"))
     plt.close(fig)
 
 
-def _plot_quantiles(qs: pd.DataFrame, best: str):
+def _plot_quantiles(qs: pd.DataFrame, best: str, prefix: str = ""):
     fig, ax = plt.subplots(figsize=(7, 4.2))
     means = qs.mean()
     ax.bar([f"Q{i+1}" for i in range(len(means))], means.values,
@@ -175,12 +188,12 @@ def _plot_quantiles(qs: pd.DataFrame, best: str):
     ax.set_title(f"Mean forward return by factor quintile: {best}")
     ax.set_ylabel("Forward 20d return")
     fig.tight_layout()
-    fig.savefig(os.path.join(OUT_DIR, "quantile_returns.png"), dpi=150)
-    fig.savefig(os.path.join(OUT_DIR, "quantile_returns.svg"))
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}quantile_returns.png"), dpi=150)
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}quantile_returns.svg"))
     plt.close(fig)
 
 
-def _plot_equity(ls: pd.Series, lo: pd.Series, bench: pd.Series):
+def _plot_equity(ls: pd.Series, lo: pd.Series, bench: pd.Series, prefix: str = ""):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 7), sharex=True,
                                    gridspec_kw={"height_ratios": [3, 1]})
     ax1.plot((1 + ls).cumprod(), label="Long-Short (selected factors)", color="#3b82f6", lw=1.6)
@@ -194,6 +207,6 @@ def _plot_equity(ls: pd.Series, lo: pd.Series, bench: pd.Series):
     ax2.set_title("Long-Short drawdown (%)")
     ax2.grid(alpha=0.25)
     fig.tight_layout()
-    fig.savefig(os.path.join(OUT_DIR, "equity_curve.png"), dpi=150)
-    fig.savefig(os.path.join(OUT_DIR, "equity_curve.svg"))
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}equity_curve.png"), dpi=150)
+    fig.savefig(os.path.join(OUT_DIR, f"{prefix}equity_curve.svg"))
     plt.close(fig)
