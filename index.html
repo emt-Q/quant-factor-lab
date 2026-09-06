@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Factor Alpha Mining & Backtesting Framework</title>
+<meta name="description" content="Quantitative research framework for multi-factor alpha mining. Factor construction, IC/Rank-IC/t-stat hypothesis testing, BHY-FDR multiple-testing correction, composite alpha construction, and out-of-sample long-short portfolio backtesting with transaction costs.">
+<meta property="og:title" content="Multi-Factor Alpha Mining & Backtesting Framework">
+<meta property="og:description" content="Quantitative research framework for multi-factor alpha mining. IC/Rank-IC testing, BHY-FDR correction, factor mining, composite alpha, and out-of-sample long-short backtesting.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://emt-q.github.io/quant-factor-lab/">
+<meta property="og:image" content="https://emt-q.github.io/quant-factor-lab/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Multi-Factor Alpha Mining & Backtesting Framework">
+<meta name="twitter:description" content="Quantitative research framework for multi-factor alpha mining with BHY-FDR and out-of-sample backtesting.">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; line-height: 1.6; }
+  .container { max-width: 800px; margin: 0 auto; padding: 60px 24px; }
+  .badge { display: inline-block; background: #1f6feb33; color: #58a6ff; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-bottom: 20px; }
+  h1 { font-size: 36px; font-weight: 700; color: #f0f6fc; margin-bottom: 16px; line-height: 1.2; }
+  .subtitle { font-size: 18px; color: #8b949e; margin-bottom: 40px; }
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 40px; }
+  .metric { background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
+  .metric .label { font-size: 12px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .metric .value { font-size: 24px; font-weight: 700; color: #3fb950; }
+  h2 { font-size: 20px; color: #f0f6fc; margin: 32px 0 12px; }
+  ul { list-style: none; margin-bottom: 24px; }
+  li { padding: 8px 0; border-bottom: 1px solid #21262d; color: #c9d1d9; }
+  li::before { content: "▸ "; color: #58a6ff; font-weight: bold; }
+  .cta { display: inline-block; background: #238636; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; margin-top: 16px; transition: background 0.2s; }
+  .cta:hover { background: #2ea043; }
+  .footer { margin-top: 48px; padding-top: 24px; border-top: 1px solid #21262d; color: #6e7681; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <span class="badge">Quantitative Research</span>
+  <h1>Multi-Factor Alpha Mining &amp; Backtesting Framework</h1>
+  <p class="subtitle">End-to-end quantitative research pipeline: factor construction → statistical hypothesis testing → BHY-FDR multiple-testing control → factor mining → composite alpha → out-of-sample long-short backtest.</p>
+
+  <div class="metrics">
+    <div class="metric">
+      <div class="label">Ann. Return (OOS)</div>
+      <div class="value">50.3%</div>
+    </div>
+    <div class="metric">
+      <div class="label">Sharpe (OOS)</div>
+      <div class="value">7.29</div>
+    </div>
+    <div class="metric">
+      <div class="label">Max Drawdown</div>
+      <div class="value">−1.8%</div>
+    </div>
+    <div class="metric">
+      <div class="label">Composite IC</div>
+      <div class="value">0.18</div>
+    </div>
+  </div>
+
+  <h2>Key Components</h2>
+  <ul>
+    <li>9 curated cross-sectional factors (momentum, reversal, vol, size, value, liquidity)</li>
+    <li>IC / Rank-IC / ICIR / t-stat testing with exact p-values (from first principles)</li>
+    <li>BHY-FDR multiple-testing correction under arbitrary dependence</li>
+    <li>Factor mining engine with 13 candidate factors</li>
+    <li>Rank-average composite alpha construction (no look-ahead bias)</li>
+    <li>Out-of-sample long-short quintile backtest with transaction costs</li>
+    <li>Synthetic data generator with planted alpha for ground-truth validation</li>
+    <li>Yahoo Finance real-data adapter with on-disk caching</li>
+  </ul>
+
+  <h2>Tech Stack</h2>
+  <ul>
+    <li>Python · NumPy · pandas · yfinance · Matplotlib</li>
+    <li>Statistical testing implemented from scratch (no scipy dependency)</li>
+  </ul>
+
+  <a class="cta" href="https://github.com/emt-Q/quant-factor-lab">View on GitHub →</a>
+
+  <div class="footer">
+    © 2025 EMT Physics · Built by Emmett Qin
+  </div>
+</div>
+</body>
+</html>
